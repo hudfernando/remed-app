@@ -41,6 +41,8 @@ export interface OrderData {
   subject: string;
   cnpj: string;
   email: string;
+  prazo: string;
+  observacao: string; 
   products: {
     codigo: number;
     descricao: string;

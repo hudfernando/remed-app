@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     const body: OrderData = await request.json();
     console.log('Dados recebidos do frontend:', JSON.stringify(body, null, 2));
 
-    const { subject, cnpj, email, products, total } = body;
+    const { subject, cnpj, email, prazo, observacao ,products, total } = body;
 
     // Validar se os dados foram recebidos
     if (!subject || !cnpj || !email || !products || !Array.isArray(products) || products.length === 0 || total === undefined) {
@@ -45,6 +45,8 @@ export async function POST(request: Request) {
           subject,
           cnpj,
           email,
+          prazo,
+          observacao,
           products,
           total,
         },
