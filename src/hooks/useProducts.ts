@@ -13,7 +13,7 @@ export function useProducts() {
             const { totalCount } = initialPage;
             const totalPages = Math.ceil(totalCount / PAGE_SIZE);
             
-            let combinedProducts = [...initialPage.items];
+            const combinedProducts = [...initialPage.items];
 
             if (totalPages > 1) {
                 const pageNumbersToFetch = Array.from({ length: totalPages - 1 }, (_, i) => i + 2);

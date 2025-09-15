@@ -6,6 +6,7 @@ import type { Product } from '@/lib/types';
 const INITIAL_VISIBLE_COUNT = 100;
 const LOAD_MORE_COUNT = 100;
 
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useInfiniteScroll(items: Product[], isFetching: boolean, dependency: any) {
     const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
     const { ref, inView } = useInView({ threshold: 0 });
