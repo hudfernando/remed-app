@@ -41,7 +41,7 @@ export function ProductList() {
       const totalCount = initialPage.totalCount;
       const totalPages = Math.ceil(totalCount / PAGE_SIZE);
       
-      let combinedProducts = [...initialPage.items];
+      const combinedProducts = [...initialPage.items];
 
       // 2. Se houver mais páginas, busca todas em paralelo
       if (totalPages > 1) {

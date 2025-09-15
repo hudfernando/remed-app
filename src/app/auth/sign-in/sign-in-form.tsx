@@ -16,8 +16,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 export function SignInForm() {
     const router = useRouter()
-    const searchParams = useSearchParams()
-     const [{ errors, message, success }, handleSubmit, isPending] = useFormState(
+     const [{ errors}, handleSubmit, isPending] = useFormState(
     signIn,
     () => {
       router.push('/')

@@ -12,7 +12,6 @@ import { OrderSummary } from '@/components/Order/OrderSummary';
 import { OrderActions } from '@/components/Order/OrderActions';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { formatCurrency } from '@/lib/utils';
 import { OrderData } from '@/lib/types';
 
 interface OrderFormData {

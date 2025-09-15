@@ -6,11 +6,6 @@ import { api } from '@/http/api';
 import { HTTPError } from 'ky';
 
 
-// URL da API backend que será responsável por enviar o e-mail
-const BACKEND_API_URL = process.env.BACKEND_API_URL
-  ? `${process.env.BACKEND_API_URL}/Email/EnvioEmail`
-  : 'https://sua-api-backend.com/Email/EnvioEmail';
-
 export async function POST(request: Request) {
   try {
     // Receber os dados do frontend
