@@ -24,7 +24,7 @@ export function ProductSearchFilters({ onFilterChange, className }: ProductSearc
   useEffect(() => {
     onFilterChange({
       searchTerm: debouncedSearchTerm,
-      codeFilter: debouncedCodeFilter,
+      //codeFilter: debouncedCodeFilter,
       fabricFilter: debouncedFabricFilter
     });
   }, [debouncedSearchTerm, debouncedCodeFilter, debouncedFabricFilter, onFilterChange]);
@@ -39,14 +39,14 @@ export function ProductSearchFilters({ onFilterChange, className }: ProductSearc
         className="flex-1 min-w-[200px]"
         aria-label="Buscar produtos"
       />
-      <Input
+      {/* <Input
         type="text"
         placeholder="Filtrar por Código"
         value={codeFilter}
         onChange={(e) => setCodeFilter(e.target.value)}
         className="flex-1 min-w-[180px]"
         aria-label="Filtrar por código"
-      />
+      /> */}
       <Input
         type="text"
         placeholder="Filtrar por Fabricante"

@@ -5,7 +5,7 @@ import type { Filters } from '@/lib/types';
 export function useProductFilters() {
     const [filters, setFilters] = useState<Filters>({
         searchTerm: '',
-        codeFilter: '',
+       // codeFilter: '',
         fabricFilter: '',
     });
     return { filters, setFilters };

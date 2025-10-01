@@ -24,7 +24,7 @@ export interface CartItem extends Product {
 
 export interface Filters {
   searchTerm: string;
-  codeFilter: string;
+  //codeFilter: string;
   fabricFilter: string;
 }
 

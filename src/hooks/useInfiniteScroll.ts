@@ -1,4 +1,3 @@
-// hooks/useInfiniteScroll.ts
 import { useState, useEffect, useMemo } from 'react';
 import { useInView } from 'react-intersection-observer';
 import type { Product } from '@/lib/types';
@@ -6,8 +5,8 @@ import type { Product } from '@/lib/types';
 const INITIAL_VISIBLE_COUNT = 100;
 const LOAD_MORE_COUNT = 100;
 
-//eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function useInfiniteScroll(items: Product[], isFetching: boolean, dependency: any) {
+// CORREÇÃO: Tornamos a função genérica com <T> e tipamos a dependência como T.
+export function useInfiniteScroll<T>(items: Product[], isFetching: boolean, dependency: T) {
     const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
     const { ref, inView } = useInView({ threshold: 0 });
 
@@ -17,10 +16,10 @@ export function useInfiniteScroll(items: Product[], isFetching: boolean, depende
         }
     }, [inView, items.length, isFetching]);
 
-    // Reseta a contagem quando os filtros mudam
+    // Reseta a contagem quando os filtros (a dependência) mudam
     useEffect(() => {
         setVisibleCount(INITIAL_VISIBLE_COUNT);
-    }, [dependency]);
+    }, [dependency]); // O useEffect observa a dependência T
 
     const visibleItems = useMemo(() => items.slice(0, visibleCount), [items, visibleCount]);
     

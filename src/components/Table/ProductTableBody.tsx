@@ -14,7 +14,7 @@ export function ProductTableBody({ products }: ProductTableBodyProps) {
       <Table className="min-w-full">
         <TableHeader>
           <TableRow className="bg-black hover:bg-black-700">
-            <TableHead className="text-white">Código</TableHead>
+            {/* <TableHead className="text-white">Código</TableHead> */}
             <TableHead className="text-white">Descrição</TableHead>
             <TableHead className="text-white">Fabricante</TableHead>
             <TableHead className="text-white text-center">Disp.</TableHead>

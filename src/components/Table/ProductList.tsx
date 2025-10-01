@@ -23,9 +23,9 @@ export function ProductList() {
         if (filters.searchTerm) {
             currentFiltered = currentFiltered.filter(p => p.descricao.toLowerCase().includes(filters.searchTerm.toLowerCase()));
         }
-        if (filters.codeFilter) {
-            currentFiltered = currentFiltered.filter(p => String(p.codigo).includes(filters.codeFilter));
-        }
+       // if (filters.codeFilter) {
+        //    currentFiltered = currentFiltered.filter(p => String(p.codigo).includes(filters.codeFilter));
+      //  }
         if (filters.fabricFilter) {
             currentFiltered = currentFiltered.filter(p => p.descricaoFab.toLowerCase().includes(filters.fabricFilter.toLowerCase()));
         }

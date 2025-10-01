@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import remedIcon from '@/assets/logo.svg'
 
-import { ProfileButton } from './profile-button'
+//import { ProfileButton } from './profile-button'
 import { Separator } from './ui/separator'
 
 export function Header() {

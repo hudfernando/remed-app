@@ -24,7 +24,7 @@ export function ProductRow({ product }: ProductRowProps) {
 
   return (
     <TableRow key={product.codigo} className="hover:bg-gray-50">
-      <TableCell className="font-medium">{product.codigo}</TableCell>
+      {/* <TableCell className="font-medium">{product.codigo}</TableCell> */}
       <TableCell>{product.descricao}</TableCell>
       <TableCell>{product.descricaoFab}</TableCell>
       <TableCell className="text-center">
