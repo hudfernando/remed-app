@@ -6,7 +6,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import Image from 'next/image'
-import logo from '@/assets/logo.svg'
+
+import logoHosp from '@/assets/LOGO GOYAZ HOSPITALAR.jpg.jpeg'
+
 import {useFormState} from '@/hooks/use-form-state'
 import { signIn } from './actions'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -26,7 +28,7 @@ export function SignInForm() {
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1 flex flex-col items-center ">
-                <Image src={logo} alt='Logo Remed' className="mr-2 size-36" />
+                <Image src={logoHosp} alt='Logo Remed' className="mr-2 size-36" />
                 <Label htmlFor="cnpj">Insira o seu CNPJ</Label>
                 <Input name="cnpj" type="text" id="cnpj" />
                 {errors?.cnpj && (
