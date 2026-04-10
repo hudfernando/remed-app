@@ -20,15 +20,26 @@ export function ProductList() {
 
     const filteredProducts = useMemo(() => {
         let currentFiltered = allProducts;
+        
         if (filters.searchTerm) {
-            currentFiltered = currentFiltered.filter(p => p.descricao.toLowerCase().includes(filters.searchTerm.toLowerCase()));
+            // Converte o termo digitado para minúsculo para busca insensível a maiúsculas
+            const term = filters.searchTerm.toLowerCase();
+            
+            currentFiltered = currentFiltered.filter(p => {
+                // Busca em cada um dos campos
+                const matchNome = p.descricao?.toLowerCase().includes(term) ?? false;
+                const matchPrincipio = p.principioAtivo?.toLowerCase().includes(term) ?? false;
+                const matchEan = p.codBarras?.toLowerCase().includes(term) ?? false; // Adicionando o EAN de volta na busca por segurança!
+
+                // Retorna verdadeiro se o termo existir em QUALQUER UM dos 3 lugares
+                return matchNome || matchPrincipio || matchEan;
+            });
         }
-       // if (filters.codeFilter) {
-        //    currentFiltered = currentFiltered.filter(p => String(p.codigo).includes(filters.codeFilter));
-      //  }
+       
         if (filters.fabricFilter) {
             currentFiltered = currentFiltered.filter(p => p.descricaoFab.toLowerCase().includes(filters.fabricFilter.toLowerCase()));
         }
+        
         return currentFiltered;
     }, [allProducts, filters]);
     

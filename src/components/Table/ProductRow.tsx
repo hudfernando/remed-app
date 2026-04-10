@@ -24,7 +24,10 @@ export function ProductRow({ product }: ProductRowProps) {
 
   return (
     <TableRow key={product.codigo} className="hover:bg-gray-50">
-      {/* <TableCell className="font-medium">{product.codigo}</TableCell> */}
+      {/* 3. Renderiza o Cód de Barras ou um traço caso venha vazio da API */}
+      <TableCell className="font-medium text-gray-600">
+        {product.codBarras || '-'}
+      </TableCell>
       <TableCell>{product.descricao}</TableCell>
       <TableCell>{product.descricaoFab}</TableCell>
       <TableCell className="text-center">
@@ -45,7 +48,7 @@ export function ProductRow({ product }: ProductRowProps) {
         <QuantitySelector 
           initialQuantity={getInitialQuantity(product.codigo)}
           onQuantityChange={handleQuantityChange}
-          max={product.emEstoque ? 999 : 0}
+          max={100000} 
         />
       </TableCell>
     </TableRow>

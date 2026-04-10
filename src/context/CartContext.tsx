@@ -1,87 +1,83 @@
 // context/CartContext.tsx
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Product, CartItem, CartContextType } from '@/lib/types';
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const CART_QUERY_KEY = ['cart'];
+
+// 1. Função auxiliar para buscar do localStorage (substitui o useEffect de montagem)
+const getCartFromStorage = (): CartItem[] => {
+  if (typeof window === 'undefined') return [];
+  const savedCart = localStorage.getItem('cart');
+  if (savedCart) {
+    try {
+      const parsedCart = JSON.parse(savedCart);
+      // PERMITE ITENS ZERADOS: >= 0
+      return parsedCart.filter((item: CartItem) => item.quantity >= 0);
+    } catch (e) {
+      console.error('Falha ao processar dados do carrinho', e);
+      return [];
+    }
+  }
+  return [];
+};
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isMounted, setIsMounted] = useState(false);
+  const queryClient = useQueryClient();
 
-  // Load cart from localStorage
-  useEffect(() => {
-    setIsMounted(true);
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        const parsedCart = JSON.parse(savedCart);
-        // Filtra itens com quantidade 0 ou menos ao carregar do localStorage
-        const cleanCart = parsedCart.filter((item: CartItem) => item.quantity > 0);
-        setCartItems(cleanCart);
-      } catch (e) {
-        console.error('Failed to parse cart data from localStorage or data corrupted', e);
-        localStorage.removeItem('cart'); // Limpa dados corrompidos
-        setCartItems([]); // Reseta o carrinho
+  // 2. Usamos o useQuery para gerir o estado inicial (sem useState/useEffect)
+  const { data: cartItems = [] } = useQuery({
+    queryKey: CART_QUERY_KEY,
+    queryFn: getCartFromStorage,
+    staleTime: Infinity, // O dado nunca fica obsoleto sozinho
+  });
+
+  // 3. Função centralizada para atualizar o estado e o localStorage (substitui o useEffect de salvamento)
+  const updateCart = (updater: (prevItems: CartItem[]) => CartItem[]) => {
+    queryClient.setQueryData<CartItem[]>(CART_QUERY_KEY, (oldItems = []) => {
+      const newItems = updater(oldItems);
+      // Salva no localStorage imediatamente
+      if (typeof window !== 'undefined') {
+        const itemsToSave = newItems.filter(item => item.quantity >= 0);
+        localStorage.setItem('cart', JSON.stringify(itemsToSave));
       }
-    }
-  }, []);
+      return newItems;
+    });
+  };
 
-  // Save cart to localStorage
-  useEffect(() => {
-    if (isMounted) {
-      // Filtra itens com quantidade 0 ou menos antes de salvar no localStorage
-      const itemsToSave = cartItems.filter(item => item.quantity > 0);
-      localStorage.setItem('cart', JSON.stringify(itemsToSave));
-    }
-  }, [cartItems, isMounted]);
-
-
-  // Função para adicionar item ao carrinho ou atualizar quantidade
   const addItemToCart = (product: Product, quantityToAdd: number = 1) => {
-    setCartItems((prevItems) => {
+    updateCart((prevItems) => {
       const existingItem = prevItems.find((item) => item.codigo === product.codigo);
-
       if (existingItem) {
         const newQuantity = existingItem.quantity + quantityToAdd;
-        if (newQuantity <= 0) {
-          // Se a nova quantidade for 0 ou menos, remove o item
-          return prevItems.filter((item) => item.codigo !== product.codigo);
-        }
-        // Atualiza a quantidade do item existente
+        // PERMITE ITENS ZERADOS: Agora só remove se for menor que 0
+        if (newQuantity < 0) return prevItems.filter((item) => item.codigo !== product.codigo);
+        
         return prevItems.map((item) =>
           item.codigo === product.codigo ? { ...item, quantity: newQuantity } : item
         );
       } else {
-        // Adiciona um novo item, mas apenas se a quantidade for maior que 0
-        if (quantityToAdd > 0) {
-          return [
-            ...prevItems,
-            {
-              ...product,
-              quantity: quantityToAdd,
-            },
-          ];
+        if (quantityToAdd >= 0) {
+          return [...prevItems, { ...product, quantity: quantityToAdd }];
         }
-        return prevItems; // Não adiciona se a quantidade a adicionar for 0 ou menos
+        return prevItems;
       }
     });
   };
 
-  // Função para remover item do carrinho completamente
   const removeItemFromCart = (productCodigo: number) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.codigo !== productCodigo));
+    updateCart((prevItems) => prevItems.filter((item) => item.codigo !== productCodigo));
   };
 
-  // Função para atualizar diretamente a quantidade de um item
   const updateItemQuantity = (productCodigo: number, newQuantity: number) => {
-    setCartItems((prevItems) => {
-      if (newQuantity <= 0) {
-        // Se a nova quantidade for 0 ou menos, remove o item
-        return prevItems.filter((item) => item.codigo !== productCodigo);
-      }
-      // Atualiza a quantidade de um item existente
+    updateCart((prevItems) => {
+      // PERMITE ITENS ZERADOS
+      if (newQuantity < 0) return prevItems.filter((item) => item.codigo !== productCodigo);
+      
       return prevItems.map((item) =>
         item.codigo === productCodigo ? { ...item, quantity: newQuantity } : item
       );
@@ -96,7 +92,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const clearCart = () => {
-    setCartItems([]);
+    updateCart(() => []);
   };
 
   return (
@@ -107,8 +103,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       updateItemQuantity,
       calculateTotal,
       clearCart,
-    }}
-    >
+    }}>
       {children}
     </CartContext.Provider>
   );

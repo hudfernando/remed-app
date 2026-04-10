@@ -33,7 +33,7 @@ export function ClientInfoForm({ onSubmit, isSubmitting, formData, onChange }: C
         <Input id="prazo" type="text" value={formData.prazo} onChange={onChange} placeholder="Ex: 21 dias" required disabled={isSubmitting} />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="observacoes">Observações *</Label>
+        <Label htmlFor="observacao">Observações *</Label>
         <Textarea
           id="observacao"
           value={formData.observacao}

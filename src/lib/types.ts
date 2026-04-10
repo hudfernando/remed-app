@@ -8,6 +8,8 @@ export interface Product {
   desconto?: number;
   predesc?: number;
   emEstoque: boolean;
+  codBarras?: string;     // Para busca por Código de Barras
+  principioAtivo?: string;
 }
 
 
@@ -49,6 +51,7 @@ export interface OrderData {
     quantidade: number;
     valorUnitario: number;
     valorTotal: number;
+    emEstoque: boolean;
   }[];
   total: number;
 }

@@ -1,6 +1,7 @@
+// app/(app)/order/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
@@ -15,7 +16,6 @@ import { sendOrderEmail } from '@/http/mutations';
 import { getCookie } from '@/lib/cookies';
 import type { OrderData, CartItem } from '@/lib/types';
 
-// CORREÇÃO 1: Adicionar os novos campos à interface do estado do formulário
 interface OrderFormData {
   cnpj: string;
   email: string;
@@ -24,28 +24,19 @@ interface OrderFormData {
 }
 
 export default function OrderPage() {
-    // CORREÇÃO 2: Adicionar os novos campos ao estado inicial
-    const [formData, setFormData] = useState<OrderFormData>({
-        cnpj: '',
+    // Inicialização direta lendo o cookie, sem o campo de e-mail secundário
+    const [formData, setFormData] = useState<OrderFormData>(() => ({
+        cnpj: getCookie('cnpj'), 
         email: '',
         prazo: '',
         observacao: ''
-    });
+    }));
 
     const { cartItems, calculateTotal, clearCart } = useCart();
     const totalValue = calculateTotal();
     const router = useRouter();
     const queryClient = useQueryClient();
 
-    // Lógica para preencher o CNPJ a partir dos cookies
-    useEffect(() => {
-        const savedCnpj = getCookie('cnpj');
-        if (savedCnpj) {
-            setFormData(prev => ({ ...prev, cnpj: savedCnpj }));
-        }
-    }, []);
-
-    // Lógica de mutação (useMutation) permanece a mesma
     const { mutate: finalizeOrder, isPending: isSubmitting } = useMutation({
         mutationFn: sendOrderEmail,
         onSuccess: () => {
@@ -59,7 +50,6 @@ export default function OrderPage() {
         },
     });
 
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { id, value } = e.target;
         setFormData((prev) => ({ ...prev, [id]: value }));
@@ -68,7 +58,6 @@ export default function OrderPage() {
     const handleFinalizeOrder = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         
-        // Validação agora inclui os novos campos
         if (!formData.cnpj || !formData.email || !formData.prazo || !formData.observacao) {
             toast.error('Por favor, preencha todos os campos obrigatórios (*).');
             return;
@@ -83,7 +72,6 @@ export default function OrderPage() {
             return;
         }
         
-        // CORREÇÃO 3: Incluir os novos campos ao criar o objeto a ser enviado
         const orderData: OrderData = {
             subject: 'Novo Pedido',
             cnpj: formData.cnpj,
@@ -96,14 +84,15 @@ export default function OrderPage() {
                 quantidade: item.quantity,
                 valorUnitario: item.predesc || item.preco,
                 valorTotal: (item.predesc || item.preco) * item.quantity,
+                emEstoque: item.emEstoque // A regra da cor vermelha continua aqui!
             })),
             total: Math.round(totalValue * 100) / 100,
         };
-        console.log("Dados FINAIS enviados para o backend:", orderData)
+        
+        console.log("Dados FINAIS enviados para o backend:", orderData);
         finalizeOrder(orderData);
     };
 
-    // O resto do componente JSX não precisa de alterações
     if (cartItems.length === 0 && !isSubmitting) {
         return (
           <div className="container mx-auto p-8 max-w-xl text-center mt-16 bg-white rounded-lg shadow-md">

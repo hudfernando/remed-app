@@ -14,7 +14,8 @@ export function ProductTableBody({ products }: ProductTableBodyProps) {
       <Table className="min-w-full">
         <TableHeader>
           <TableRow className="bg-black hover:bg-black-700">
-            {/* <TableHead className="text-white">Código</TableHead> */}
+            {/* 2. Adicionada a coluna de Cód. Barras */}
+            <TableHead className="text-white">Cód. Barras</TableHead>
             <TableHead className="text-white">Descrição</TableHead>
             <TableHead className="text-white">Fabricante</TableHead>
             <TableHead className="text-white text-center">Disp.</TableHead>
@@ -30,7 +31,7 @@ export function ProductTableBody({ products }: ProductTableBodyProps) {
           ))}
           {products.length === 0 && (
             <TableRow>
-              <TableCell colSpan={8} className="text-center text-gray-500">
+              <TableCell colSpan={9} className="text-center text-gray-500">
                 Nenhum produto encontrado.
               </TableCell>
             </TableRow>

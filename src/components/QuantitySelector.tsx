@@ -1,14 +1,14 @@
 // components/QuantitySelector.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface QuantitySelectorProps {
-  initialQuantity?: number;
+  initialQuantity?: number; // Agora, este é o nosso valor real vindo direto do carrinho
   onQuantityChange: (newQuantity: number) => void;
   min?: number;
   max?: number;
@@ -19,31 +19,27 @@ export function QuantitySelector({
   initialQuantity = 0,
   onQuantityChange,
   min = 0,
-  max = 999,
+  max = 10000, // Limite de 10000 que configuramos anteriormente
   className,
 }: QuantitySelectorProps) {
-  const [quantity, setQuantity] = useState<number>(initialQuantity);
+  
+  // Mantemos o useState apenas para feedback visual da interface (UX)
   const [isFocused, setIsFocused] = useState(false);
-
-  useEffect(() => {
-    setQuantity(initialQuantity);
-  }, [initialQuantity]);
+  const [inputValue, setInputValue] = useState(initialQuantity.toString());
 
   const handleIncrease = () => {
-    const newQuantity = Math.min(quantity + 1, max);
-    updateQuantity(newQuantity);
+    onQuantityChange(Math.min(initialQuantity + 1, max));
   };
 
   const handleDecrease = () => {
-    const newQuantity = Math.max(quantity - 1, min);
-    updateQuantity(newQuantity);
+    onQuantityChange(Math.max(initialQuantity - 1, min));
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    
+    setInputValue(value); // Apenas atualiza o texto temporário enquanto o usuário digita
+
     if (value === '') {
-      setQuantity(min);
       onQuantityChange(min);
       return;
     }
@@ -51,24 +47,20 @@ export function QuantitySelector({
     const numValue = Number.parseInt(value, 10);
     if (!Number.isNaN(numValue)) {
       const clampedValue = Math.min(Math.max(numValue, min), max);
-      setQuantity(clampedValue);
+      onQuantityChange(clampedValue);
     }
   };
 
   const handleBlur = () => {
     setIsFocused(false);
-    if (quantity < min) {
-      updateQuantity(min);
-    } else if (quantity > max) {
-      updateQuantity(max);
-    } else {
-      onQuantityChange(quantity);
+    // Validações de segurança ao sair do campo
+    if (initialQuantity < min) {
+      onQuantityChange(min);
+    } else if (initialQuantity > max) {
+      onQuantityChange(max);
     }
-  };
-
-  const updateQuantity = (newQuantity: number) => {
-    setQuantity(newQuantity);
-    onQuantityChange(newQuantity);
+    // Reseta o input visual para bater com o valor real do carrinho
+    setInputValue(initialQuantity.toString());
   };
 
   return (
@@ -78,18 +70,21 @@ export function QuantitySelector({
         size="icon"
         onClick={handleDecrease}
         className="h-8 w-8"
-        disabled={quantity <= min}
+        disabled={initialQuantity <= min}
         aria-label="Diminuir quantidade"
       >
         <Minus className="h-3 w-3" />
       </Button>
       <Input
         type="number"
-        value={isFocused ? quantity.toString() : quantity}
+        value={isFocused ? inputValue : initialQuantity}
         onChange={handleInputChange}
-        onFocus={() => setIsFocused(true)}
+        onFocus={() => {
+          setIsFocused(true);
+          setInputValue(initialQuantity.toString());
+        }}
         onBlur={handleBlur}
-        className="w-12 text-center h-8 px-2"
+        className="w-24 text-center h-8 px-2"
         min={min}
         max={max}
         aria-label="Quantidade"
@@ -99,7 +94,7 @@ export function QuantitySelector({
         size="icon"
         onClick={handleIncrease}
         className="h-8 w-8"
-        disabled={quantity >= max}
+        disabled={initialQuantity >= max}
         aria-label="Aumentar quantidade"
       >
         <Plus className="h-3 w-3" />
